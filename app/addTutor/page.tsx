@@ -1,7 +1,7 @@
 "use client";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { AnchorProvider, Idl, Program, setProvider, web3 } from "@coral-xyz/anchor";
-import idl from "../../idl/tutor_management_program.json"; // Update with your IDL file
+import { AnchorProvider, Idl, Program, setProvider, web3, BN } from "@coral-xyz/anchor";
+import idl from "../../target/idl/tutor_management_program.json"; // Update with your IDL file
 import { useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 
@@ -51,7 +51,11 @@ function AddTutorInfo() {
         setError(null);
         setTransactionSignature(null);
 
-        const tutorInfoAccount = web3.Keypair.generate();
+        // Derive the PDA for the tutor info account
+        const [tutorInfoPda] = await PublicKey.findProgramAddress(
+            [Buffer.from(formData.tutorId), wallet.publicKey.toBuffer()],
+            program.programId
+        );
 
         try {
             const sig = await program.methods
@@ -59,7 +63,7 @@ function AddTutorInfo() {
                     formData.tutorId,
                     formData.name,
                     formData.subjectSpecialization.split(","),
-                    parseInt(formData.hourlyRate),
+                    new BN(parseInt(formData.hourlyRate)),
                     parseInt(formData.experienceYears),
                     parseInt(formData.rating),
                     formData.phoneNumber,
@@ -67,11 +71,10 @@ function AddTutorInfo() {
                     formData.profileLink
                 )
                 .accounts({
-                    tutorInfo: tutorInfoAccount.publicKey,
+                    tutorInfo: tutorInfoPda,
                     admin: wallet.publicKey,
                     systemProgram: web3.SystemProgram.programId,
                 })
-                .signers([tutorInfoAccount])
                 .rpc();
 
             setTransactionSignature(sig);
