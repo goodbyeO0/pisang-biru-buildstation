@@ -1,0 +1,316 @@
+{
+  "address": "2s8DtDbjd6NqMQMUfDwvcMCGGwonTVbK4jDnYSiLomKo",
+  "metadata": {
+    "name": "tutor_management_program",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "add_tutor_info",
+      "discriminator": [
+        68,
+        210,
+        98,
+        54,
+        86,
+        7,
+        37,
+        71
+      ],
+      "accounts": [
+        {
+          "name": "tutor_info",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "tutor_id"
+              },
+              {
+                "kind": "account",
+                "path": "admin"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "tutor_id",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "subject_specialization",
+          "type": {
+            "vec": "string"
+          }
+        },
+        {
+          "name": "hourly_rate",
+          "type": "u64"
+        },
+        {
+          "name": "experience_years",
+          "type": "u8"
+        },
+        {
+          "name": "rating",
+          "type": "u8"
+        },
+        {
+          "name": "phone_number",
+          "type": "string"
+        },
+        {
+          "name": "email",
+          "type": "string"
+        },
+        {
+          "name": "profile_link",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "delete_tutor_info",
+      "discriminator": [
+        205,
+        100,
+        25,
+        89,
+        119,
+        20,
+        38,
+        38
+      ],
+      "accounts": [
+        {
+          "name": "tutor_info",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "tutor_id"
+              },
+              {
+                "kind": "account",
+                "path": "admin"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "tutor_id",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "update_tutor_info",
+      "discriminator": [
+        34,
+        108,
+        185,
+        3,
+        190,
+        252,
+        177,
+        43
+      ],
+      "accounts": [
+        {
+          "name": "tutor_info",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "tutor_id"
+              },
+              {
+                "kind": "account",
+                "path": "admin"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "tutor_id",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "subject_specialization",
+          "type": {
+            "vec": "string"
+          }
+        },
+        {
+          "name": "hourly_rate",
+          "type": "u64"
+        },
+        {
+          "name": "experience_years",
+          "type": "u8"
+        },
+        {
+          "name": "rating",
+          "type": "u8"
+        },
+        {
+          "name": "phone_number",
+          "type": "string"
+        },
+        {
+          "name": "email",
+          "type": "string"
+        },
+        {
+          "name": "profile_link",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "TutorInfo",
+      "discriminator": [
+        184,
+        73,
+        247,
+        119,
+        143,
+        113,
+        254,
+        106
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidRating",
+      "msg": "Rating must be between 1 and 10"
+    },
+    {
+      "code": 6001,
+      "name": "TutorIdTooLong",
+      "msg": "Tutor ID too long"
+    },
+    {
+      "code": 6002,
+      "name": "NameTooLong",
+      "msg": "Name too long"
+    },
+    {
+      "code": 6003,
+      "name": "PhoneNumberTooLong",
+      "msg": "Phone number too long"
+    },
+    {
+      "code": 6004,
+      "name": "EmailTooLong",
+      "msg": "Email too long"
+    },
+    {
+      "code": 6005,
+      "name": "ProfileLinkTooLong",
+      "msg": "Profile link too long"
+    }
+  ],
+  "types": [
+    {
+      "name": "TutorInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "address",
+            "type": "pubkey"
+          },
+          {
+            "name": "tutor_id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "subject_specialization",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "hourly_rate",
+            "type": "u64"
+          },
+          {
+            "name": "experience_years",
+            "type": "u8"
+          },
+          {
+            "name": "rating",
+            "type": "u8"
+          },
+          {
+            "name": "verified",
+            "type": "bool"
+          },
+          {
+            "name": "phone_number",
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "type": "string"
+          },
+          {
+            "name": "profile_link",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}
