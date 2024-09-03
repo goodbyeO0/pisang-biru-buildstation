@@ -1,7 +1,3 @@
-/**
- * Solana Actions Example
- */
-
 import {
     ActionPostResponse,
     createPostResponse,
@@ -25,19 +21,30 @@ import { DEFAULT_SOL_ADDRESS, DEFAULT_SOL_AMOUNT } from "./const";
 // create the standard headers for this route (including CORS)
 const headers = createActionHeaders();
 
+let toPubkey: PublicKey = DEFAULT_SOL_ADDRESS;
+let amount: number = DEFAULT_SOL_AMOUNT;
+let contactInfo: string = "";
+let account: PublicKey | null = null;
+
+// Define the variable to store the most recent transaction hash
+let mostRecentTransactionHash: string | null = null;
+
 export const GET = async (req: Request) => {
     try {
         const requestUrl = new URL(req.url); // the url of the current request
-        console.log(`requestUrl: ${requestUrl}`)
-        const { toPubkey } = validatedQueryParams(requestUrl);
-        console.log(`validatedQueryParams: ${JSON.stringify(validatedQueryParams(requestUrl))}`)
+        console.log(`requestUrl: ${requestUrl}`);
+        const { toPubkey: newToPubkey, amount: newAmount, contactInfo: newContactInfo } = validatedQueryParams(requestUrl);
+        toPubkey = newToPubkey;
+        amount = newAmount;
+        contactInfo = newContactInfo;
+        console.log(`validatedQueryParams: ${JSON.stringify(validatedQueryParams(requestUrl))}`);
         // validatedQueryParams: {"amount":1,"toPubkey":"nick6zJc6HpW3kfBm4xS2dmbuVRyb5F3AnUvj5ymzR5"}
 
         const baseHref = new URL(
             `/api/actions/transfer-sol?to=${toPubkey.toBase58()}`,
             requestUrl.origin,
         ).toString();
-        console.log(baseHref)
+        console.log(baseHref);
         // http://localhost:3000/api/actions/transfer-sol?to=3oGRxuPz1Q1ergQ1WvvTtMQthdPAM5pZ9mjEJMSA7xmy
 
         const payload: ActionGetResponse = {
@@ -49,8 +56,8 @@ export const GET = async (req: Request) => {
             links: {
                 actions: [
                     {
-                        label: "Send 0.5 SOL", // button text
-                        href: `${baseHref}&amount=${"0.5"}&contactInfo={contactInfo}`, // this href will have a text input
+                        label: "Send 0.1 SOL", // button text
+                        href: `${baseHref}&amount=${"0.1"}&contactInfo={contactInfo}`, // this href will have a text input
                         parameters: [
                             {
                                 name: "contactInfo", // parameter name in the `href` above
@@ -84,18 +91,21 @@ export const OPTIONS = async () => Response.json(null, { headers });
 export const POST = async (req: Request) => {
     try {
         const requestUrl = new URL(req.url);
-        console.log(`requestUrl: ${requestUrl}`)
-        const { amount, toPubkey, contactInfo } = validatedQueryParams(requestUrl);
-        console.log(contactInfo)
+        console.log(`requestUrl: ${requestUrl}`);
+        const { amount: newAmount, toPubkey: newToPubkey, contactInfo: newContactInfo } = validatedQueryParams(requestUrl);
+        toPubkey = newToPubkey;
+        amount = newAmount;
+        contactInfo = newContactInfo;
+
+        console.log(contactInfo);
 
         const body: ActionPostRequest = await req.json();
-        console.log(`body: ${JSON.stringify(body)}`)
+        console.log(`body: ${JSON.stringify(body)}`);
 
         // validate the client provided input
-        let account: PublicKey;
         try {
             account = new PublicKey(body.account);
-            console.log(`body.account: ${account}`)
+            console.log(`body.account: ${account}`);
         } catch (err) {
             throw 'Invalid "account" provided';
         }
@@ -121,7 +131,7 @@ export const POST = async (req: Request) => {
 
         // get the latest blockhash amd block height
         const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-        console.log(`getLatestBlockhash: ${JSON.stringify(await connection.getLatestBlockhash())}`)
+        console.log(`getLatestBlockhash: ${JSON.stringify(await connection.getLatestBlockhash())}`);
 
         // create a legacy transaction
         const transaction = new Transaction({
@@ -160,14 +170,30 @@ export const POST = async (req: Request) => {
             status: 400,
             headers,
         });
+    } finally {
+        const connection = new Connection(
+            process.env.SOLANA_RPC! || clusterApiUrl("devnet"),
+        );
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Fetch recent transactions for the receiver account
+        const confirmedSignatures = await connection.getSignaturesForAddress(toPubkey, { limit: 1 });
+        console.log(`Confirmed signatures for ${toPubkey.toBase58()}: ${JSON.stringify(confirmedSignatures)}`);
+
+        // Find the most recent transaction hash
+        mostRecentTransactionHash = confirmedSignatures.length > 0 ? confirmedSignatures[0].signature : null;
+        console.log(`Most recent transaction hash: ${mostRecentTransactionHash}`);
     }
 };
 
-function validatedQueryParams(requestUrl: URL) {
-    let toPubkey: PublicKey = DEFAULT_SOL_ADDRESS;
-    let amount: number = DEFAULT_SOL_AMOUNT;
-    let contactInfo: String = ""
+export const getToPubkey = () => toPubkey;
+export const getAmount = () => amount;
+export const getContactInfo = () => contactInfo;
+export const getAccount = () => account;
 
+// Export the variable to use it in another page
+export const getMostRecentTransactionHash = () => mostRecentTransactionHash;
+
+const validatedQueryParams = (requestUrl: URL) => {
     try {
         if (requestUrl.searchParams.get("to")) {
             toPubkey = new PublicKey(requestUrl.searchParams.get("to")!);
