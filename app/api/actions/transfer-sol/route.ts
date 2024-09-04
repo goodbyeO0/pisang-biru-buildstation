@@ -81,6 +81,8 @@ export const GET = async (req: Request) => {
             status: 400,
             headers,
         });
+    } finally {
+        console.log("hello from get")
     }
 };
 
@@ -182,6 +184,8 @@ export const POST = async (req: Request) => {
         // Find the most recent transaction hash
         mostRecentTransactionHash = confirmedSignatures.length > 0 ? confirmedSignatures[0].signature : null;
         console.log(`Most recent transaction hash: ${mostRecentTransactionHash}`);
+
+        console.log("hello")
     }
 };
 

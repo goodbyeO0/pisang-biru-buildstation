@@ -2,6 +2,7 @@ import { getToPubkey, getAmount, getContactInfo, getAccount, getMostRecentTransa
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import { promises as fs } from 'fs';
 import path from 'path';
+import nodemailer from "nodemailer"
 
 export const GET = async (req: Request) => {
     const toPubkey = getToPubkey();
@@ -15,19 +16,15 @@ export const GET = async (req: Request) => {
     // Fetch transactions that happened after the most recent transaction hash
     let latestTransaction = await fetchLatestTransactionAfterHash(toPubkey, mostRecentTransactionHash);
 
-    // Check if the latest transaction matches the most recent transaction hash
-    if (latestTransaction === mostRecentTransactionHash) {
-        latestTransaction = "waitForConfirmation";
-    }
-
-    // If the latest transaction exists and is not "waitForConfirmation", write to a JSON file
-    if (latestTransaction && latestTransaction !== "waitForConfirmation" && getMostRecentTransactionHash() != null) {
+    // Check if the latest transaction exists and is not "waitForConfirmation"
+    if (latestTransaction && latestTransaction.signature !== mostRecentTransactionHash && contactInfo !== "") {
         const transactionData = {
-            transaction: latestTransaction,
+            transaction: latestTransaction.signature,
             to: toPubkey.toBase58(),
             from: account?.toBase58(),
             amount,
-            contactInfo
+            contactInfo,
+            blockTime: latestTransaction.blockTime
         };
 
         // Use an absolute path based on the current working directory
@@ -50,7 +47,7 @@ export const GET = async (req: Request) => {
         }
 
         // Check if the latest transaction hash already exists in the transactions
-        const transactionExists = transactions.some((tx: { transaction: string; }) => tx.transaction === latestTransaction);
+        const transactionExists = transactions.some((tx: { transaction: string; }) => tx.transaction === latestTransaction.signature);
 
         // Prepend the new transaction data if it does not already exist
         if (!transactionExists) {
@@ -61,10 +58,24 @@ export const GET = async (req: Request) => {
 
             // Log a message indicating the file creation
             console.log(`Transaction data has been written to ${filePath}`);
-        }
-    }
 
-    return Response.json({ transaction: latestTransaction, to: toPubkey, from: account, amount, contactInfo });
+            // Send an email notification
+            await sendEmailNotification(contactInfo, latestTransaction.signature, amount, toPubkey.toBase58());
+        }
+
+        return new Response(JSON.stringify({
+            transaction: latestTransaction.signature,
+            to: toPubkey.toBase58(),
+            from: account?.toBase58(),
+            amount,
+            contactInfo,
+            blockTime: latestTransaction.blockTime
+        }), { status: 200 });
+    } else {
+        return new Response(JSON.stringify({
+            message: "No new transactions found or waiting for confirmation."
+        }), { status: 200 });
+    }
 };
 
 const fetchLatestTransactionAfterHash = async (toPubkey: PublicKey, lastTransactionHash: string | null) => {
@@ -75,10 +86,34 @@ const fetchLatestTransactionAfterHash = async (toPubkey: PublicKey, lastTransact
     const lastTransactionIndex = confirmedSignatures.findIndex(signatureInfo => signatureInfo.signature === lastTransactionHash);
 
     // Filter transactions that happened after the specified transaction hash
-    const filteredTransactions = confirmedSignatures.slice(0, lastTransactionIndex);
+    const filteredTransactions = lastTransactionIndex !== -1 ? confirmedSignatures.slice(0, lastTransactionIndex) : confirmedSignatures;
 
     // Get the latest transaction from the filtered transactions
     const latestTransaction = filteredTransactions.length > 0 ? filteredTransactions[0] : null;
 
-    return latestTransaction?.signature;
+    return latestTransaction;
+};
+
+const sendEmailNotification = async (toEmail: string, transactionSignature: string, amount: number, tutorAddress: string) => {
+    const GMAIL_KEY = process.env.GMAIL_KEY
+    // Create a transporter object using the default SMTP transport
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'zikrizhan@gmail.com', // Replace with your Gmail address
+            pass: GMAIL_KEY   // Replace with your app-specific password
+        }
+    });
+
+    // Email content
+    const mailOptions = {
+        from: 'zikrizhan@gmail.com', // Replace with your Gmail address
+        to: toEmail,
+        subject: 'Payment Successful',
+        text: `Your payment of ${amount} SOL was successful. You can view the transaction on Solana Explorer: https://explorer.solana.com/tx/${transactionSignature}\n\nTutor Address: ${tutorAddress}`
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent to ${toEmail}`);
 };
