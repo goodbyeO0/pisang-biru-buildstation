@@ -101,42 +101,45 @@ const Page: React.FC = () => {
     return (
         <div className="container mx-auto p-4">
             {publicKey?.toString() === targetWallet ? (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
-                        <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                            <tr>
-                                <th className="px-4 py-2 border-b text-center">Ticket ID</th>
-                                <th className="px-4 py-2 border-b text-center">From</th>
-                                <th className="px-4 py-2 border-b text-center">Date</th>
-                                <th className="px-4 py-2 border-b text-center">Time</th>
-                                <th className="px-4 py-2 border-b text-center">Receipt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {transactions.map((transaction, index) => {
-                                const { date, time } = formatBlockTime(transaction.blockTime);
-                                return (
-                                    <tr key={index} className="hover:bg-gray-100">
-                                        <td className="px-4 py-2 border-b text-center">{shortenAddress(transaction.nftAddress)}</td>
-                                        <td className="px-4 py-2 border-b text-center">{shortenAddress(transaction.from)}</td>
-                                        <td className="px-4 py-2 border-b text-center">{date}</td>
-                                        <td className="px-4 py-2 border-b text-center">{time}</td>
-                                        <td className="px-4 py-2 border-b text-center">
-                                            <a
-                                                href={`https://explorer.solana.com/tx/${transaction.transaction}?cluster=devnet`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 hover:underline"
-                                            >
-                                                {shortenAddress(transaction.transaction)}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                <>
+                    <h1 className="text-4xl font-bold text-center mb-6 text-purple-600">Marvel Endgame</h1>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                                <tr>
+                                    <th className="px-4 py-2 border-b text-center">Ticket ID</th>
+                                    <th className="px-4 py-2 border-b text-center">From</th>
+                                    <th className="px-4 py-2 border-b text-center">Date</th>
+                                    <th className="px-4 py-2 border-b text-center">Time</th>
+                                    <th className="px-4 py-2 border-b text-center">Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {transactions.map((transaction, index) => {
+                                    const { date, time } = formatBlockTime(transaction.blockTime);
+                                    return (
+                                        <tr key={index} className="hover:bg-gray-100">
+                                            <td className="px-4 py-2 border-b text-center">{shortenAddress(transaction.nftAddress)}</td>
+                                            <td className="px-4 py-2 border-b text-center">{shortenAddress(transaction.from)}</td>
+                                            <td className="px-4 py-2 border-b text-center">{date}</td>
+                                            <td className="px-4 py-2 border-b text-center">{time}</td>
+                                            <td className="px-4 py-2 border-b text-center">
+                                                <a
+                                                    href={`https://explorer.solana.com/tx/${transaction.transaction}?cluster=devnet`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:underline"
+                                                >
+                                                    {shortenAddress(transaction.transaction)}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
             ) : (
                 <p className="text-center text-red-600">You are not connected to the correct wallet.</p>
             )}
