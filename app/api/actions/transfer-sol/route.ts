@@ -58,7 +58,7 @@ export const GET = async (req: Request) => {
                 actions: [
                     {
                         label: "Buy Ticket", // button text
-                        href: `${baseHref}&amount=${"0.1"}&contactInfo={contactInfo}`, // this href will have a text input
+                        href: `${baseHref}&amount=${"0.01"}&contactInfo={contactInfo}`, // this href will have a text input
                         parameters: [
                             {
                                 name: "contactInfo", // parameter name in the `href` above
