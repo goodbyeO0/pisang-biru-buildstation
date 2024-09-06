@@ -12,6 +12,7 @@ import {
     Connection,
     LAMPORTS_PER_SOL,
     PublicKey,
+    sendAndConfirmRawTransaction,
     SystemProgram,
     Transaction,
 } from "@solana/web3.js";
