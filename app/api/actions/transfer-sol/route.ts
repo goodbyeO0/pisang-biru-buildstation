@@ -50,19 +50,19 @@ export const GET = async (req: Request) => {
 
         const payload: ActionGetResponse = {
             type: "action",
-            title: "Actions Example - Transfer Native SOL",
+            title: "Marvel Endgame",
             icon: new URL("/gambar_izhan.jpg", requestUrl.origin).toString(),
-            description: "Tuition halFLight",
+            description: "\nThe epic conclusion to the Avengers saga! Witness the final battle that will decide the fate of the universe. Relive the action-packed moments that brought heroes together like never before. \n\n\n\nBuy your ticket now for just 0.1 SOL.",
             label: "Transfer", // this value will be ignored since `links.actions` exists
             links: {
                 actions: [
                     {
-                        label: "Send 0.1 SOL", // button text
+                        label: "Buy Ticket", // button text
                         href: `${baseHref}&amount=${"0.1"}&contactInfo={contactInfo}`, // this href will have a text input
                         parameters: [
                             {
                                 name: "contactInfo", // parameter name in the `href` above
-                                label: "contact info", // placeholder of the text input
+                                label: "email", // placeholder of the text input
                                 required: true,
                             },
                         ],
