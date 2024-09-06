@@ -18,7 +18,7 @@ const Page: React.FC = () => {
     const [contactInfo, setContactInfo] = useState<string | null>(null);
     const { publicKey } = useWallet();
 
-    const targetWallet = '3oGRxuPz1Q1ergQ1WvvTtMQthdPAM5pZ9mjEJMSA7xmy';
+    const targetWallet = '5vn8ez957qBXjtS8NQctvriviMpvjeWQw4pz89cAv8AN';
 
     useEffect(() => {
         const fetchTransactions = async () => {
@@ -102,10 +102,10 @@ const Page: React.FC = () => {
         <div className="container mx-auto p-4">
             {publicKey?.toString() === targetWallet ? (
                 <>
-                    <h1 className="text-4xl font-bold text-center mb-6 text-purple-600">Marvel Endgame</h1>
+                    <h1 className="text-4xl font-bold text-center mb-6 text-black">Marvel Endgame</h1>
                     <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
-                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-2xl">
+                            <thead className="bg-slate-300 text-black">
                                 <tr>
                                     <th className="px-4 py-2 border-b text-center">Ticket ID</th>
                                     <th className="px-4 py-2 border-b text-center">From</th>

@@ -20,10 +20,14 @@ const Navbar: NextPage<NavbarProps> = ({ children }) => {
     }
 
     return (
-        <nav className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 flex justify-between items-center shadow-lg">
-            <div className="text-white text-2xl font-bold">
-                My DApp
+        <nav className="p-4 flex justify-between items-center shadow-lg">
+            <div className="flex items-center space-x-4 text-2xl font-bold text-black">
+                <h1>EASYPAY</h1>
+                <a href="http://localhost:3000/viewTransactionData" className="text-slate-700 no-underline text-sm pl-20">
+                    View Transaction
+                </a>
             </div>
+            
             <div className="flex items-center space-x-4">
                 <div className="bg-white rounded-lg p-4 shadow-md flex items-center space-x-4">
                     <WalletBalance />

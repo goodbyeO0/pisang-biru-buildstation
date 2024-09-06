@@ -107,14 +107,14 @@ const sendEmailNotification = async (toEmail: string, transactionSignature: stri
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'zikrizhan@gmail.com', // Replace with your Gmail address
+            user: 'harizhakim85@gmail.com', // Replace with your Gmail address
             pass: GMAIL_KEY   // Replace with your app-specific password
         }
     });
 
     // Email content
     const mailOptions = {
-        from: 'zikrizhan@gmail.com', // Replace with your Gmail address
+        from: 'harizhakim85@gmail.com', // Replace with your Gmail address
         to: toEmail,
         subject: 'Payment Confirmation and Your Movie Ticket',
         text: `Dear customer,
